@@ -1,18 +1,15 @@
 import express from "express";
-import { db } from "./db/index.js";
-import { users } from "./db/schema.js";
+import { createWebhookHandler } from "./modules/webhooks/webhook.controller.js";
 
 const app = express();
 
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("FlowForge API is running 🚀");
+  res.send("webhooksis running");
 });
 
-app.get("/test-db", async (req, res) => {
-  const result = await db.select().from(users);
-  res.json(result);
-});
+app.post("/webhooks", createWebhookHandler);
+
 
 export default app;
