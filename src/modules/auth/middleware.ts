@@ -8,9 +8,10 @@ export function auth(req: Request, res: Response, next: NextFunction) {
 
   try {
     const user = verifyToken(token);
-    (req as any).user = user;
+    (req as any).user = user; 
     next();
-  } catch {
+  } catch (err) {
+    console.error("JWT verification error:", err); 
     res.status(401).json({ error: "Invalid token" });
   }
 }

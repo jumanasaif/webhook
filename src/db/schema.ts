@@ -13,6 +13,7 @@ export const pipelines = pgTable("pipelines", {
   webhookPath: text("webhook_path"),
   secret: text("secret"),
   actionType: text("action_type"),
+  actionConfig: jsonb("action_config"),
 });
 
 export const jobs = pgTable("jobs", {
@@ -21,6 +22,7 @@ export const jobs = pgTable("jobs", {
   payload: jsonb("payload"),
   status: text("status"),
   result: jsonb("result"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const subscribers = pgTable("subscribers", {
