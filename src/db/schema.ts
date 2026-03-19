@@ -1,34 +1,38 @@
-import { pgTable, text, uuid, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  email: text("email").notNull().unique(),
-  createdAt: timestamp("created_at").defaultNow(),
+  email: text("email").notNull(),
+  password: text("password").notNull(),
 });
 
-export const webhooks = pgTable("webhooks", {
+export const pipelines = pgTable("pipelines", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("user_id").notNull(),
-  url: text("url").notNull(),
-  event: text("event").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  userId: uuid("user_id"),
+  name: text("name"),
+  webhookPath: text("webhook_path"),
+  secret: text("secret"),
+  actionType: text("action_type"),
 });
 
-
-export const events = pgTable("events", {
+export const jobs = pgTable("jobs", {
   id: uuid("id").defaultRandom().primaryKey(),
-  type: text("type").notNull(),
-  payload: text("payload").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  pipelineId: uuid("pipeline_id"),
+  payload: jsonb("payload"),
+  status: text("status"),
+  result: jsonb("result"),
 });
 
+export const subscribers = pgTable("subscribers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  pipelineId: uuid("pipeline_id"),
+  url: text("url"),
+});
 
 export const deliveries = pgTable("deliveries", {
   id: uuid("id").defaultRandom().primaryKey(),
-  webhookId: uuid("webhook_id").notNull(),
-  eventId: uuid("event_id").notNull(),
-  status: text("status").notNull(), 
-  attempt: text("attempt").notNull(),
-  responseCode: text("response_code"),
-  createdAt: timestamp("created_at").defaultNow(),
+  jobId: uuid("job_id"),
+  subscriberId: uuid("subscriber_id"),
+  attempts: integer("attempts").default(0),
+  status: text("status"),
 });
