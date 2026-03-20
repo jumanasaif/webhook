@@ -7,6 +7,7 @@ import {
   deletePipeline,
 } from "./controller.js";
 import { auth } from "../auth/middleware.js";
+import { webhookHandler } from "./webhook.controller.js";
 
 const router = Router();
 
@@ -15,5 +16,6 @@ router.get("/", auth, getPipelines);
 router.get("/:id", auth, getPipelineById);
 router.put("/:id", auth, updatePipeline);
 router.delete("/:id", auth, deletePipeline);
+router.post("/webhook/:path", webhookHandler);
 
 export default router;
