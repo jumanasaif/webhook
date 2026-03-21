@@ -15,6 +15,20 @@
       "when": 1773886297082,
       "tag": "0001_eminent_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774110586611,
+      "tag": "0002_typical_iron_lad",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774136100557,
+      "tag": "0003_typical_marvex",
+      "breakpoints": true
     }
   ]
 }
