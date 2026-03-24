@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Pipeline Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .pipeline-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .pipeline-actions button {
+            flex: 1;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .edit-pipeline {
+            background: #667eea;
+            color: white;
+        }
+
+        .edit-pipeline:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .delete-pipeline {
+            background: #f44336;
+            color: white;
+        }
+
+        .delete-pipeline:hover {
+            background: #da190b;
+            transform: translateY(-1px);
+        }
+
+        .edit-subscriber {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        .edit-subscriber:hover {
+            background: #f57c00;
+        }
+
+        /* Email Form Styles */
+        .email-form-container {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #dee2e6;
+            animation: slideDown 0.3s ease;
+        }
+
+        .email-form-container h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .email-form-container .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .email-form-container label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .email-form-container small {
+            display: block;
+            margin-top: 0.25rem;
+            color: #6c757d;
+            font-size: 0.75rem;
+        }
+
+        #emailPreviewField {
+            background: white;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s;
+        }
+
+        #emailPreviewField:hover {
+            border-color: #667eea;
+        }
+
+        #pdfOutputPathGroup {
+            transition: all 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Page -->
+        <div id="loginPage" class="page active">
+            <div class="container">
+                <div class="auth-card">
+                    <h1>🚀 Webhook Pipeline</h1>
+                    <h2>Login to Dashboard</h2>
+                    <form id="loginForm">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p>Don't have an account? <a href="#" onclick="showRegister()">Register</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="registerPage" class="page">
+            <div class="container">
+                <div class="auth-card">
+                    <h1>🚀 Webhook Pipeline</h1>
+                    <h2>Create Account</h2>
+                    <form id="registerForm">
+                        <input type="email" id="registerEmail" placeholder="Email" required>
+                        <input type="password" id="registerPassword" placeholder="Password" required>
+                        <button type="submit">Register</button>
+                    </form>
+                    <p>Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboardPage" class="page">
+            <nav class="navbar">
+                <div class="nav-container">
+                    <h1>⚡ Webhook Pipeline Dashboard</h1>
+                    <div class="nav-links">
+                        <button onclick="showSection('pipelines')" class="nav-btn active">📋 Pipelines</button>
+                        <button onclick="showSection('createPipeline')" class="nav-btn">✨ Create Pipeline</button>
+                        <button onclick="showSection('webhookTester')" class="nav-btn">🧪 Webhook Tester</button>
+                        <button onclick="showSection('jobs')" class="nav-btn">📊 Jobs</button>
+                        <button onclick="logout()" class="nav-btn logout-btn">🚪 Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="dashboard-container">
+                <!-- Pipelines Section -->
+                <div id="pipelinesSection" class="section active">
+                    <h2>Your Pipelines</h2>
+                    <div id="pipelinesList" class="pipelines-grid"></div>
+                </div>
+
+                <!-- Create Pipeline Section -->
+                <div id="createPipelineSection" class="section">
+                    <h2>Create New Pipeline</h2>
+                    <form id="createPipelineForm" class="pipeline-form">
+                        <div class="form-group">
+                            <label>Pipeline Name</label>
+                            <input type="text" id="pipelineName" placeholder="e.g., User Data Processor" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Action Type</label>
+                            <select id="actionType" required>
+                                <option value="transform">🔄 Transform - Rename fields</option>
+                                <option value="filter">🎯 Filter - Condition check</option>
+                                <option value="enrich">✨ Enrich - Add metadata</option>
+                                <option value="email">📧 Email - Send email notification</option>
+                                <option value="validate_json">✅ Validate JSON - Check data structure</option>
+                                <option value="replace_text">🔄 Replace Text - Find and replace in strings</option>
+                                <option value="pdf_generator">📄 PDF Generator - Create CV from data</option>
+                            </select>
+                        </div>
+            
+                        <div class="form-group">
+                            <label>Chain to Pipeline (Optional)</label>
+                            <select id="nextPipelineId">
+                                <option value="">-- No chaining --</option>
+                            </select>
+                            <small>Select a pipeline to pass the result to after processing</small>
+                        </div>
+
+                        <div id="transformConfig" class="action-config hidden">
+                            <h3>🔄 Transform Configuration</h3>
+                            <div class="form-group">
+                                <label>Field Renames (JSON format)</label>
+                                <textarea id="transformConfigInput" rows="6" placeholder='{"name": "fullName", "age": "userAge"}'></textarea>
+                                <small>Example: {"old_field_name": "new_field_name"}</small>
+                                <small style="display: block; margin-top: 5px; color: #667eea;">
+                                    💡 This will rename the specified fields. Fields not listed will remain unchanged.
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label>Transform to Uppercase?</label>
+                                <select id="transformUppercase">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes - Convert all string values to uppercase</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="filterConfig" class="action-config hidden">
+                            <h3>🎯 Filter Configuration</h3>
+                            <div class="form-group">
+                                <label>Field Name</label>
+                                <input type="text" id="filterField" placeholder="e.g., age">
+                            </div>
+                            <div class="form-group">
+                                <label>Operator</label>
+                                <select id="filterOperator">
+                                    <option value="eq">Equals (=)</option>
+                                    <option value="gt">Greater Than (>)</option>
+                                    <option value="lt">Less Than (<)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Value</label>
+                                <input type="text" id="filterValue" placeholder="e.g., 18">
+                            </div>
+                        </div>
+
+                        <div id="enrichConfig" class="action-config hidden">
+                            <h3>✨ Enrich Configuration</h3>
+                            <p>This action automatically adds:</p>
+                            <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                                <li>📅 Current timestamp</li>
+                                <li>🏷️ Source identifier</li>
+                            </ul>
+                        </div>
+
+                       
+                        <div id="validateJsonConfig" class="action-config hidden">
+                            <h3>✅ Validate JSON Configuration</h3>
+                            <div class="form-group">
+                                <label>Required Fields (JSON array)</label>
+                                <textarea id="validateRequiredFields" rows="3" placeholder='["name", "email", "age"]'></textarea>
+                                <small>Fields that must exist in the payload</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Field Types (JSON object)</label>
+                                <textarea id="validateFieldTypes" rows="4" placeholder='{"name": "string", "age": "number", "email": "string"}'></textarea>
+                                <small>Expected types: string, number, boolean, object, array</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Enum Fields (allowed values)</label>
+                                <textarea id="validateEnumFields" rows="4" placeholder='{"status": ["pending", "success", "failed"]}'></textarea>
+                                <small>Allowed values for specific fields</small>
+                            </div>
+                        </div>
+
+                        <!-- Replace Text Config -->
+                        <div id="replaceTextConfig" class="action-config hidden">
+                            <h3>🔄 Replace Text Configuration</h3>
+                            <div class="form-group">
+                                <label>Replacements (JSON array)</label>
+                                <textarea id="replaceReplacements" rows="6" placeholder='[{"find": "old_text", "replace": "new_text"}, {"find": "foo", "replace": "bar"}]'></textarea>
+                                <small>List of find/replace pairs</small>
+                            </div>
+                        </div>
+
+                        <!-- PDF Generator Config -->
+                        <div id="pdfGeneratorConfig" class="action-config hidden">
+                            <h3>📄 PDF Generator Configuration</h3>
+                            <div class="form-group">
+                                <label>Template Style</label>
+                                <select id="pdfTemplate">
+                                    <option value="professional">👔 Professional (Classic)</option>
+                                    <option value="modern">✨ Modern (Colorful Sidebar)</option>
+                                    <option value="simple">📝 Simple (Minimalist)</option>
+                                </select>
+                                <small>Choose the visual style for your CV</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Output Type</label>
+                                <select id="pdfOutput">
+                                    <option value="buffer">📤 Return as Base64 (for email/API)</option>
+                                    <option value="file">💾 Save to file on server</option>
+                                    <option value="both">📤💾 Both (return + save)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="pdfOutputPathGroup" style="display: none;">
+                                <label>Output Path (for file storage)</label>
+                                <input type="text" id="pdfOutputPath" placeholder="./output/cvs/">
+                                <small>Directory where PDFs will be saved</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Custom Filename</label>
+                                <input type="text" id="pdfFilename" placeholder="cv-{{name}}.pdf">
+                                <small>Use {{name}} to insert the person's name. Example: "cv-{{name}}.pdf"</small>
+                            </div>
+                        </div>
+
+        
+
+                        <button type="submit" class="submit-btn">Create Pipeline</button>
+                    </form>
+                </div>
+
+                <!-- Webhook Tester Section -->
+                <div id="webhookTesterSection" class="section">
+                    <h2>🧪 Webhook Tester</h2>
+                    <div class="webhook-tester-container">
+                        <div class="tester-card">
+                            <div class="form-group">
+                                <label>Select Pipeline</label>
+                                <select id="testPipelineSelect" onchange="handlePipelineSelect()">
+                                    <option value="">-- Select a pipeline --</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Email Form Container -->
+                            <div id="emailFormContainer" class="email-form-container hidden">
+                                <h3>📧 Email Details</h3>
+                                <div class="form-group">
+                                    <label>To (Recipient Email) *</label>
+                                    <input type="email" id="emailToField" placeholder="recipient@example.com">
+                                    <small>Email address to send the notification to</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Subject</label>
+                                    <input type="text" id="emailSubjectField" placeholder="Webhook Notification">
+                                    <small>Email subject line</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Message / Body</label>
+                                    <textarea id="emailBodyField" rows="5" placeholder="Hello! You have a new notification..."></textarea>
+                                    <small>HTML content is supported. Use {{field_name}} to insert values from payload</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Preview</label>
+                                    <div id="emailPreviewField" style="background: white; padding: 10px; border-radius: 5px; font-size: 12px; max-height: 150px; overflow-y: auto; border: 1px solid #ddd;">
+                                        Fill in the fields above and add payload to see preview
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- CV Data Form -->
+                            <div id="cvFormContainer" class="cv-form-container hidden">
+                                <h3>📄 CV Data Entry</h3>
+                                
+                                <!-- Personal Information -->
+                                <div class="form-section">
+                                    <h4>👤 Personal Information</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Full Name *</label>
+                                            <input type="text" id="cvFullName" placeholder="Jumana Saif">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Email *</label>
+                                            <input type="email" id="cvEmail" placeholder="jumana@example.com">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Phone</label>
+                                            <input type="text" id="cvPhone" placeholder="+962 7 1234 5678">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Location</label>
+                                            <input type="text" id="cvLocation" placeholder="Amman, Jordan">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>LinkedIn</label>
+                                            <input type="text" id="cvLinkedin" placeholder="linkedin.com/in/username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>GitHub</label>
+                                            <input type="text" id="cvGithub" placeholder="github.com/username">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Professional Summary</label>
+                                        <textarea id="cvSummary" rows="3" placeholder="Experienced software developer with 5+ years in backend development..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Experience Section -->
+                                <div class="form-section">
+                                    <h4>💼 Work Experience</h4>
+                                    <div id="experienceList">
+                                        <div class="experience-item">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Job Title</label>
+                                                    <input type="text" class="exp-title" placeholder="Senior Developer">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Company</label>
+                                                    <input type="text" class="exp-company" placeholder="Tech Company">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Start Date</label>
+                                                    <input type="text" class="exp-start" placeholder="2022-01">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>End Date</label>
+                                                    <input type="text" class="exp-end" placeholder="Present">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Description</label>
+                                                <textarea class="exp-desc" rows="2" placeholder="Developed APIs, managed databases..."></textarea>
+                                            </div>
+                                            <button type="button" class="remove-experience" onclick="this.closest('.experience-item').remove()">🗑️ Remove</button>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addExperience()" class="add-btn">➕ Add Experience</button>
+                                </div>
+                                
+                                <!-- Education Section -->
+                                <div class="form-section">
+                                    <h4>🎓 Education</h4>
+                                    <div id="educationList">
+                                        <div class="education-item">
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Degree</label>
+                                                    <input type="text" class="edu-degree" placeholder="Bachelor in Computer Science">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Institution</label>
+                                                    <input type="text" class="edu-institution" placeholder="University of Jordan">
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group">
+                                                    <label>Year</label>
+                                                    <input type="text" class="edu-year" placeholder="2020">
+                                                </div>
+                                            </div>
+                                            <button type="button" class="remove-education" onclick="this.closest('.education-item').remove()">🗑️ Remove</button>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addEducation()" class="add-btn">➕ Add Education</button>
+                                </div>
+                                
+                                <!-- Skills Section -->
+                                <div class="form-section">
+                                    <h4>⚡ Skills</h4>
+                                    <div id="skillsContainer">
+                                        <div class="skills-input-group">
+                                            <input type="text" class="skill-input" placeholder="Node.js" style="width: calc(100% - 80px); display: inline-block;">
+                                            <button type="button" onclick="addSkill(this)" class="add-skill-btn">Add</button>
+                                        </div>
+                                    </div>
+                                    <div id="skillsList" class="skills-tags"></div>
+                                </div>
+                                
+                                <button type="button" onclick="buildCVPayload()" class="build-cv-btn">📄 Build CV & Send Webhook</button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Pipeline Secret (Auto-filled)</label>
+                                <input type="text" id="testPipelineSecret" readonly placeholder="Select a pipeline first">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Webhook URL</label>
+                                <input type="text" id="testWebhookUrl" readonly placeholder="Will be auto-filled">
+                                <button type="button" onclick="copyWebhookUrl()" class="copy-btn">📋 Copy URL</button>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Additional Payload (JSON)</label>
+                                <textarea id="testPayload" rows="8" placeholder='{"name": "John Doe", "age": 25, "email": "john@example.com"}'></textarea>
+                                <div class="preset-buttons">
+                                    <button type="button" onclick="setPresetPayload('user')" class="preset-btn">👤 User Data</button>
+                                    <button type="button" onclick="setPresetPayload('order')" class="preset-btn">📦 Order Data</button>
+                                    <button type="button" onclick="setPresetPayload('event')" class="preset-btn">🎉 Event Data</button>
+                                </div>
+                                <small>For email pipelines, the email details will be merged with this payload</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Generated Signature (x-signature)</label>
+                                <div class="signature-box">
+                                    <code id="generatedSignature">-- Will be generated when you click test --</code>
+                                    <button type="button" onclick="copySignature()" class="copy-btn">📋 Copy Signature</button>
+                                </div>
+                            </div>
+                            
+                            <div class="test-buttons">
+                                <button onclick="generateAndSendWebhook()" class="test-btn send-btn">🚀 Send Webhook</button>
+                                <button onclick="calculateSignatureOnly()" class="test-btn calc-btn">🔐 Calculate Signature Only</button>
+                                <button onclick="clearWebhookForm()" class="test-btn clear-btn">🗑️ Clear</button>
+                            </div>
+                            
+                            <div id="testResult" class="test-result hidden">
+                                <div id="resultMessage"></div>
+                                <div id="resultDetails"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jobs Section -->
+                <div id="jobsSection" class="section">
+                    <h2>📊 Jobs History</h2>
+                    <div id="jobsList" class="jobs-list"></div>
+                </div>
+
+                <!-- Pipeline Details Modal -->
+                <div id="pipelineModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal()">&times;</span>
+                        <div id="pipelineDetails"></div>
+                        <div id="subscribersList"></div>
+                        <div class="modal-actions">
+                            <button onclick="showAddSubscriber()" class="btn-primary">➕ Add Subscriber</button>
+                            <button onclick="closeModal()" class="btn-secondary">Close</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Subscriber Modal -->
+                <div id="subscriberModal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeSubscriberModal()">&times;</span>
+                        <h3>➕ Add Subscriber</h3>
+                        <input type="text" id="subscriberUrl" placeholder="https://your-webhook-url.com" style="width: 100%; padding: 10px; margin: 10px 0;">
+                        <button onclick="addSubscriber()" class="btn-primary">Add Subscriber</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

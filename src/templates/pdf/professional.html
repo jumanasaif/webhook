@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - {{personal.fullName}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: white;
+            color: #2d3748;
+            line-height: 1.5;
+            padding: 40px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #3182ce;
+            margin-bottom: 30px;
+        }
+        
+        .name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 10px;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: #4a5568;
+        }
+        
+        .contact-info span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #3182ce;
+            border-left: 4px solid #3182ce;
+            padding-left: 12px;
+            margin-bottom: 15px;
+        }
+        
+        /* Summary */
+        .summary {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Experience & Education */
+        .entry {
+            margin-bottom: 20px;
+        }
+        
+        .entry-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .entry-subtitle {
+            font-size: 14px;
+            color: #4a5568;
+            margin: 5px 0;
+        }
+        
+        .entry-date {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+        
+        .entry-description {
+            font-size: 14px;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        
+        /* Skills */
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            list-style: none;
+        }
+        
+        .skills-list li {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #2d3748;
+        }
+        
+        /* Social Links */
+        .social-links {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .social-links a {
+            color: #3182ce;
+            text-decoration: none;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="name">{{personal.fullName}}</div>
+            <div class="contact-info">
+                <span>📧 {{personal.email}}</span>
+                <span>📞 {{personal.phone}}</span>
+                <span>📍 {{personal.location}}</span>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        {{#if personal.summary}}
+        <div class="section">
+            <div class="section-title">Professional Summary</div>
+            <div class="summary">
+                {{personal.summary}}
+            </div>
+        </div>
+        {{/if}}
+        
+        <!-- Experience -->
+        {{#if experience.length}}
+        <div class="section">
+            <div class="section-title">Work Experience</div>
+            {{#each experience}}
+            <div class="entry">
+                <div class="entry-title">{{title}}</div>
+                <div class="entry-subtitle">{{company}}</div>
+                <div class="entry-date">{{startDate}} - {{endDate}}</div>
+                <div class="entry-description">{{description}}</div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        <!-- Education -->
+        {{#if education.length}}
+        <div class="section">
+            <div class="section-title">Education</div>
+            {{#each education}}
+            <div class="entry">
+                <div class="entry-title">{{degree}}</div>
+                <div class="entry-subtitle">{{institution}}</div>
+                <div class="entry-date">{{year}}</div>
+                {{#if description}}
+                <div class="entry-description">{{description}}</div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        <!-- Skills -->
+        {{#if skills.length}}
+        <div class="section">
+            <div class="section-title">Skills</div>
+            <ul class="skills-list">
+                {{#each skills}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+        {{/if}}
+        
+        <!-- Social Links -->
+        {{#if personal.linkedin}}
+        <div class="social-links">
+            🔗 LinkedIn: <a href="https://{{personal.linkedin}}">{{personal.linkedin}}</a>
+            {{#if personal.github}} | 🐙 GitHub: <a href="https://{{personal.github}}">{{personal.github}}</a>{{/if}}
+        </div>
+        {{/if}}
+        
+        <div class="no-print" style="text-align: center; margin-top: 30px; font-size: 10px; color: #cbd5e0;">
+            Generated on {{generatedDate}}
+        </div>
+    </div>
+</body>
+</html>

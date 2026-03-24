@@ -1,0 +1,11 @@
+{
+  "name": "webhook-dashboard",
+  "version": "1.0.0",
+  "description": "Webhook Pipeline Dashboard",
+  "scripts": {
+    "start": "live-server --port=5500 --host=localhost"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV - {{personal.fullName}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 40px;
+        }
+        
+        .cv {
+            max-width: 700px;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            padding: 40px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .contact {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            font-size: 12px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .entry {
+            margin-bottom: 15px;
+        }
+        
+        .entry-title {
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        .entry-sub {
+            font-size: 11px;
+            color: #666;
+            margin: 3px 0;
+        }
+        
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .skill {
+            font-size: 11px;
+            padding: 2px 8px;
+            background: #f0f0f0;
+        }
+        
+        hr {
+            margin: 15px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="cv">
+        <h1>{{personal.fullName}}</h1>
+        <div class="contact">
+            {{personal.email}} | {{personal.phone}} | {{personal.location}}
+            {{#if personal.linkedin}} | LinkedIn: {{personal.linkedin}}{{/if}}
+            {{#if personal.github}} | GitHub: {{personal.github}}{{/if}}
+        </div>
+        
+        {{#if personal.summary}}
+        <div class="section">
+            <div class="section-title">Summary</div>
+            <p style="font-size: 12px;">{{personal.summary}}</p>
+        </div>
+        {{/if}}
+        
+        {{#if experience.length}}
+        <div class="section">
+            <div class="section-title">Experience</div>
+            {{#each experience}}
+            <div class="entry">
+                <div class="entry-title">{{title}} at {{company}}</div>
+                <div class="entry-sub">{{startDate}} - {{endDate}}</div>
+                <div style="font-size: 11px; margin-top: 5px;">{{description}}</div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        {{#if education.length}}
+        <div class="section">
+            <div class="section-title">Education</div>
+            {{#each education}}
+            <div class="entry">
+                <div class="entry-title">{{degree}}</div>
+                <div class="entry-sub">{{institution}}, {{year}}</div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+        
+        {{#if skills.length}}
+        <div class="section">
+            <div class="section-title">Skills</div>
+            <div class="skills">
+                {{#each skills}}
+                <span class="skill">{{this}}</span>
+                {{/each}}
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</body>
+</html>

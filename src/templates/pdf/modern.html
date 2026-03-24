@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{personal.fullName}} - CV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+        }
+        
+        .cv-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            width: 33%;
+            float: left;
+        }
+        
+        .main {
+            padding: 30px;
+            width: 67%;
+            float: left;
+        }
+        
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+        
+        .name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .contact-item {
+            margin-bottom: 12px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .skill-tag {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #333;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin: 5px 5px 0 0;
+        }
+        
+        .job, .edu {
+            margin-bottom: 20px;
+        }
+        
+        .job-title, .edu-degree {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .job-company, .edu-institution {
+            color: #667eea;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        
+        .job-date, .edu-date {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .job-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .cv-container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cv-container clearfix">
+        <div class="sidebar">
+            <div class="name">{{personal.fullName}}</div>
+            <div class="title">Webhook Developer</div>
+            
+            <div style="margin-top: 30px;">
+                <div style="font-weight: 600; margin-bottom: 15px;">Contact</div>
+                <div class="contact-item">📧 {{personal.email}}</div>
+                <div class="contact-item">📞 {{personal.phone}}</div>
+                <div class="contact-item">📍 {{personal.location}}</div>
+                {{#if personal.linkedin}}
+                <div class="contact-item">🔗 {{personal.linkedin}}</div>
+                {{/if}}
+                {{#if personal.github}}
+                <div class="contact-item">🐙 {{personal.github}}</div>
+                {{/if}}
+            </div>
+            
+            {{#if skills.length}}
+            <div style="margin-top: 30px;">
+                <div style="font-weight: 600; margin-bottom: 15px;">Skills</div>
+                <div>
+                    {{#each skills}}
+                    <span class="skill-tag">{{this}}</span>
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+        
+        <div class="main">
+            {{#if personal.summary}}
+            <div class="section">
+                <div class="section-title">About Me</div>
+                <p style="font-size: 13px; color: #666; line-height: 1.6;">{{personal.summary}}</p>
+            </div>
+            {{/if}}
+            
+            {{#if experience.length}}
+            <div class="section">
+                <div class="section-title">Experience</div>
+                {{#each experience}}
+                <div class="job">
+                    <div class="job-title">{{title}}</div>
+                    <div class="job-company">{{company}}</div>
+                    <div class="job-date">{{startDate}} - {{endDate}}</div>
+                    <div class="job-desc">{{description}}</div>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+            
+            {{#if education.length}}
+            <div class="section">
+                <div class="section-title">Education</div>
+                {{#each education}}
+                <div class="edu">
+                    <div class="edu-degree">{{degree}}</div>
+                    <div class="edu-institution">{{institution}}</div>
+                    <div class="edu-date">{{year}}</div>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</body>
+</html>
