@@ -15,6 +15,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.71.0",
     "cors": "^2.8.6",
@@ -22,13 +23,16 @@
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.1",
+    "form-data": "^4.0.5",
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "node-fetch": "^3.3.2",
     "nodemailer": "^8.0.3",
-    "pg": "^8.20.0"
+    "pg": "^8.20.0",
+    "puppeteer": "^24.40.0"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
