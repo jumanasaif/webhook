@@ -29,6 +29,20 @@
       "when": 1774136100557,
       "tag": "0003_typical_marvex",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774139177667,
+      "tag": "0004_sudden_prima",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774141426409,
+      "tag": "0005_steep_darkstar",
+      "breakpoints": true
     }
   ]
 }

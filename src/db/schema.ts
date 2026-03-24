@@ -26,7 +26,6 @@ export const deliveryStatusEnum = pgEnum("delivery_status", [
 ]);
 
 
-
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").notNull().unique(),
@@ -40,9 +39,13 @@ export const pipelines = pgTable("pipelines", {
   userId: uuid("user_id").notNull().references(() => users.id),
   name: text("name").notNull(),
   webhookPath: text("webhook_path").notNull().unique(),
-  secret: text("secret"),
+  secret: text("secret").notNull().unique(),
   actionType: text("action_type").notNull(),
   actionConfig: jsonb("action_config").default({}),
+  nextPipelineId: uuid("next_pipeline_id"),
+  totalJobs: integer("total_jobs").default(0),
+  successJobs: integer("success_jobs").default(0),
+  failedJobs: integer("failed_jobs").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -67,7 +70,6 @@ export const jobs = pgTable(
     error: text("error"),
 
     createdAt: timestamp("created_at").defaultNow(),
-    nextPipelineId: uuid("next_pipeline_id").references(() => pipelines.id),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
