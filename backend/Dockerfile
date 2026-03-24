@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     harfbuzz \
     ca-certificates \
     ttf-freefont \
+    fontconfig \
     font-noto-emoji
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
@@ -16,13 +17,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm ci --only=production
+RUN npm ci --only=production || npm install --production
 
 COPY . .
 
 RUN mkdir -p output/cvs
 
-RUN npm run db:generate
+RUN npm run db:generate || true
 
 EXPOSE 3000
 

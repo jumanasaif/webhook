@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Webhook Pipeline Dashboard",
   "scripts": {
-    "start": "live-server --port=5500 --host=localhost"
+    "start": "live-server --port=5500 --host=0.0.0.0 --entry-file=index.html --no-browser"
   },
   "devDependencies": {
     "live-server": "^1.2.2"
