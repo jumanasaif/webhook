@@ -104,18 +104,18 @@ jobs:
           cd frontend
           echo "Checking frontend files..."
           ls -la
-          test -f index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
-          test -f app.js && echo "✅ app.js exists" || echo "⚠️ app.js not found"
-          test -f style.css && echo "✅ style.css exists" || echo "⚠️ style.css not found"
-          test -f package.json && echo "✅ package.json exists" || echo "⚠️ package.json not found"
+          test -f index.html && echo "index.html exists" || echo " index.html missing"
+          test -f app.js && echo " app.js exists" || echo " app.js not found"
+          test -f style.css && echo " style.css exists" || echo " style.css not found"
+          test -f package.json && echo "package.json exists" || echo " package.json not found"
       
       - name: Validate JavaScript syntax
         run: |
           cd frontend
           if [ -f app.js ]; then
-            node -c app.js && echo "✅ JavaScript syntax is valid"
+            node -c app.js && echo "JavaScript syntax is valid"
           else
-            echo "⚠️ No app.js found"
+            echo "No app.js found"
           fi
       
       - name: Check frontend can start
@@ -145,12 +145,20 @@ jobs:
           cd frontend
           docker build -t webhook-frontend:${{ github.sha }} .
       
-      - name: Test docker-compose up
+      - name: Test docker compose
         run: |
-          docker-compose up -d
+          cat > .env << 'EOF'
+          SMTP_HOST=smtp.ethereal.email
+          SMTP_PORT=587
+          SMTP_USER=test@ethereal.email
+          SMTP_PASS=testpass
+          SMTP_FROM=test@ethereal.email
+          EOF
+          
+          docker compose up -d
           sleep 15
-          docker-compose ps
-          docker-compose down
+          docker compose ps
+          docker compose down
 
   success:
     runs-on: ubuntu-latest
